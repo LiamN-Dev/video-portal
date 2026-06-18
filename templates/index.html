@@ -29,8 +29,8 @@
         body { width: 100%; background-color: var(--bg-color); background-image: var(--bg-gradient); background-attachment: fixed; color: var(--text-primary); font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
         .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
 
-        /* --- LOGGED OUT GATE VIEW --- */
-        #logged-out-view { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        /* GATE VIEWS */
+        #logged-out-view, #maintenance-view { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .lock-card { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 20px; padding: 48px 40px; max-width: 460px; width: 100%; backdrop-filter: blur(16px); box-shadow: var(--shadow-lg); text-align: center; }
         .lock-card h1 { font-family: 'Cinzel', serif; font-size: 26px; letter-spacing: 2px; margin-bottom: 6px; }
         .lock-card .subtitle { font-size: 12px; color: var(--accent-gold); letter-spacing: 3px; font-weight: 600; margin-bottom: 24px; text-transform: uppercase; }
@@ -42,7 +42,7 @@
         .btn-premium:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(223, 178, 108, 0.35); }
         .error-banner { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171; padding: 10px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; }
 
-        /* --- LOGGED IN HEADER --- */
+        /* HEADER */
         header { border-bottom: 1px solid var(--border-color); background: rgba(10, 10, 14, 0.6); backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 100; padding: 20px 0; margin-bottom: 40px; }
         .header-content { display: flex; justify-content: space-between; align-items: center; }
         .brand-logo-text { font-family: 'Cinzel', serif; font-size: 20px; font-weight: 700; letter-spacing: 2px; color: var(--text-primary); text-decoration: none; }
@@ -50,28 +50,35 @@
         .btn-admin-toggle { border: 1px solid var(--accent-gold-dim); background: rgba(223, 178, 108, 0.05); color: var(--accent-gold); border-radius: 100px; padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; }
         .btn-logout { background: transparent; border: 1px solid var(--border-color); border-radius: 100px; padding: 8px 18px; color: var(--text-secondary); font-size: 13px; text-decoration: none; }
 
-        /* VIDEO PLATFORM PANELS */
+        /* MAIN DISPLAY COMPONENT PANELS */
         .section-headline { margin-bottom: 24px; }
         .section-headline-tag { font-size: 12px; letter-spacing: 3px; color: var(--accent-gold); font-weight: 600; text-transform: uppercase; }
         .section-headline h2 { font-family: 'Cinzel', serif; font-size: 28px; }
         .media-grid { display: grid; grid-template-columns: 2fr 1.2fr; gap: 32px; margin-bottom: 48px; }
         @media (max-width: 968px) { .media-grid { grid-template-columns: 1fr; } }
         .video-cinema-card { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-lg); }
-        .video-player-wrapper { position: relative; width: 100%; padding-top: 56.25%; background: #020203; }
+        .video-player-wrapper { position: relative; width: 100%; padding-top: 56.25%; background: #000000; }
         .video-player-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
         .video-card-body { padding: 24px; }
         .badge-tier { font-size: 11px; font-weight: 700; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; display: inline-block; margin-bottom: 12px; }
         .badge-standard { background: rgba(255,255,255,0.05); color: var(--text-secondary); }
         .badge-bonus { background: rgba(223,178,108,0.1); color: var(--accent-gold); border: 1px solid var(--accent-gold); }
 
-        /* FEED SECTIONS */
+        /* LIVE FEED ELEMENT MODULES */
         .side-feed { display: flex; flex-direction: column; gap: 16px; }
         .side-feed-title { font-size: 13px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent-gold); font-weight: 600; }
         .side-card { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 14px; padding: 16px; display: flex; gap: 14px; cursor: pointer; transition: var(--transition-smooth); }
         .side-card:hover { background: var(--surface-hover); transform: translateX(4px); }
         .side-card-thumb { width: 60px; height: 40px; background: #020203; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--accent-gold); }
 
-        /* --- NEW: FAMILY FEEDBACK ENGINE (COMMENTS) --- */
+        /* ANNOUNCEMENT BOARDS */
+        .announcement-banner { background: linear-gradient(90deg, #1e1b15 0%, #11100d 100%); border-left: 4px solid var(--accent-gold); border-radius: 8px; padding: 16px; margin-bottom: 24px; position: relative; }
+        .announcement-banner.personal { background: linear-gradient(90deg, #111625 0%, #0a0d14 100%); border-left-color: #38bdf8; }
+        .announcement-header { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--accent-gold); margin-bottom: 4px; font-weight: 700; }
+        .announcement-header span { color: var(--text-muted); font-weight: 400; text-transform: none; float: right; }
+        .announcement-text { font-size: 14px; color: var(--text-primary); line-height: 1.4; }
+
+        /* COMMENTS SYSTEM CONTAINER */
         .comment-container { margin-top: 24px; border-top: 1px solid var(--border-color); padding-top: 24px; }
         .comment-box-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
         .comment-entry-row { background: rgba(255,255,255,0.02); border-radius: 12px; padding: 14px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.02); }
@@ -82,7 +89,7 @@
         .comment-input-field { flex-grow: 1; background: #0a0a0f; border: 1px solid #222; border-radius: 8px; color: white; padding: 12px; font-family: inherit; font-size: 14px; }
         .btn-comment-submit { background: #dfb26c; color: black; border: none; border-radius: 8px; padding: 0 20px; font-weight: bold; cursor: pointer; }
 
-        /* --- HIDDEN ADMIN BOARD CARD --- */
+        /* ADMINISTRATIVE MANAGEMENT INFRASTRUCTURE VIEW */
         #hidden-admin-desk { background: #0e0f17; border: 1px solid #1f2231; border-radius: 20px; padding: 32px; margin-top: 40px; display: none; box-shadow: inset 0 4px 30px rgba(0,0,0,0.8); }
         .admin-grid { display: grid; grid-template-columns: 1fr; gap: 32px; }
         @media(min-width: 900px) { .admin-grid { grid-template-columns: 1.2fr 1fr; } }
@@ -98,7 +105,24 @@
 </head>
 <body>
 
-    {% if not logged_in %}
+    <!-- --- MAINTENANCE WORK OVERRIDE INTERFACE VIEW --- -->
+    {% if not logged_in and maintenance %}
+    <div id="maintenance-view">
+        <div class="lock-card" style="border-color: var(--accent-gold); max-width: 520px;">
+            <div style="font-size: 40px; margin-bottom: 10px;">⚙️</div>
+            <h1>SYSTEM UPGRADE IN PROGRESS</h1>
+            <div class="subtitle" style="color: #38bdf8;">B-Stream Central Network Module</div>
+            <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 24px;">
+                We are currently polishing the web portal infrastructure components and updating active storage paths. Access is temporarily suspended for core tier accounts. 
+            </p>
+            <div style="background: rgba(223, 178, 108, 0.05); padding: 12px; border: 1px dashed var(--accent-gold-dim); border-radius: 8px; font-size: 12px; color: var(--accent-gold); font-family: monospace;">
+                STATUS: DEPLOYING RECTIFIED BINARIES
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if not logged_in and not maintenance %}
     <div id="logged-out-view">
         <div class="lock-card">
             <h1>B-Stream Central</h1>
@@ -126,8 +150,8 @@
         <div class="container header-content">
             <a href="/" class="brand-logo-text">B-Stream Central</a>
             <div class="header-user-actions">
-                <span>Hello, {{ name }}!</span>
-                {% if tier == 'admin' %}
+                <span>Hello, {{ name }}! (<span style="text-transform: uppercase; font-size:11px; color:var(--accent-gold);">{{ tier }}</span>)</span>
+                {% if tier in ['admin', 'supervisor'] %}
                 <button class="btn-admin-toggle" onclick="toggleAdminDesk()">Control Panel Desk</button>
                 {% endif %}
                 <a href="/logout" class="btn-logout">Sign Out</a>
@@ -137,17 +161,30 @@
 
     <div class="container">
         
-        {% if tier == 'admin' %}
+        <!-- --- SYSTEM INFRASTRUCTURE CONTROL DESK --- -->
+        {% if tier in ['admin', 'supervisor'] %}
         <div id="hidden-admin-desk">
-            <h2 style="color:#dfb26c; font-family:'Cinzel', serif; margin-bottom:20px; font-size:22px;">System Infrastructure Control Desk</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #22263a; padding-bottom: 15px;">
+                <h2 style="color:#dfb26c; font-family:'Cinzel', serif; font-size:22px;">System Infrastructure Control Desk</h2>
+                
+                <!-- MAINTENANCE MODE SWITCH ENGINE -->
+                <div>
+                    <a href="/admin/toggle-maintenance" class="btn-premium" style="font-size:12px; padding: 8px 16px; margin:0; background: {% if maintenance_state %}#ef4444{% else %}#10b981{% endif %}; color:white;">
+                        {% if maintenance_state %}⚠️ Turn Off Maintenance Mode{% else %}🛠️ Turn On Maintenance Mode{% endif %}
+                    </a>
+                </div>
+            </div>
+
             <div class="admin-grid">
                 
+                <!-- ACCOUNT MANAGEMENT: Locked strictly to True Admin only -->
                 <div class="admin-card">
                     <h3>Registered Accounts Directory</h3>
+                    {% if tier == 'admin' %}
                     <div style="overflow-x:auto;">
                         <table class="admin-table">
                             <thead>
-                                <tr><th>Name</th><th>Account User/Email</th><th>Passcode</th><th>Access</th><th>Actions</th></tr>
+                                <tr><th>Name</th><th>User/Email</th><th>Passcode</th><th>Access</th><th>Actions</th></tr>
                             </thead>
                             <tbody>
                                 {% for email, info in users_list.items() %}
@@ -161,6 +198,7 @@
                                             <select name="tier" style="background:#1a1d2c; color:white; border:none;">
                                                 <option value="standard" {% if info.tier == 'standard' %}selected{% endif %}>Standard</option>
                                                 <option value="bonus" {% if info.tier == 'bonus' %}selected{% endif %}>Bonus</option>
+                                                <option value="supervisor" {% if info.tier == 'supervisor' %}selected{% endif %}>Supervisor</option>
                                                 <option value="admin" {% if info.tier == 'admin' %}selected{% endif %}>Admin</option>
                                             </select>
                                         </td>
@@ -184,11 +222,31 @@
                         <select name="tier" class="form-ctrl">
                             <option value="standard">Standard Tier</option>
                             <option value="bonus">Bonus Tier</option>
+                            <option value="supervisor">Supervisor Tier</option>
                         </select>
                         <button type="submit" class="btn-premium" style="padding:8px; font-size:13px; margin-top:0;">Authorize Profile</button>
                     </form>
+                    {% else %}
+                    <p style="color:var(--text-muted); font-size:13px; margin-bottom:15px;">🔒 Directory alterations are protected at Admin tier clearance level.</p>
+                    {% endif %}
+
+                    <!-- BROADCAST ANNOUNCEMENTS SECTION (Both Admin & Supervisors Can Formulate) -->
+                    <h3 style="margin-top:25px;">Broadcast Announcements Engine</h3>
+                    <form action="/admin/post-announcement" method="POST">
+                        <label class="auth-label">Target Target Scope Range</label>
+                        <select name="scope" class="form-ctrl">
+                            <option value="global">Global Broadcast (All Users View)</option>
+                            <option class="side-feed-title" disabled>— Specific Account Targets —</option>
+                            {% for u_email, u_info in users_list.items() %}
+                            <option value="{{ u_email }}">Target Cover: {{ u_info.name }} ({{ u_email }})</option>
+                            {% endfor %}
+                        </select>
+                        <textarea name="content" placeholder="Type announcement dispatch logs here..." class="form-ctrl" style="height:70px; resize:none;" required></textarea>
+                        <button type="submit" class="btn-premium" style="padding:8px; font-size:13px; margin-top:0; background: #ea580c;">Transmit Dispatch Banner</button>
+                    </form>
                 </div>
 
+                <!-- VIDEO STORAGE ARCHIVE (Admin & Supervisor Access) -->
                 <div class="admin-card">
                     <h3>Publish New Media Stream</h3>
                     <form action="/admin/add-video" method="POST">
@@ -221,6 +279,28 @@
         </div>
         {% endif %}
 
+        <!-- --- LIVE DISPATCH INJECTION ZONE --- -->
+        {% for ann in global_announcements %}
+        <div class="announcement-banner">
+            <div class="announcement-header">📢 Global Network Broadcast Announcement <span>From: {{ ann.sender }} • {{ ann.time }}</span></div>
+            <div class="announcement-text">{{ ann.content }}</div>
+            {% if tier in ['admin', 'supervisor'] %}
+            <a href="/admin/clear-announcement/global/{{ ann.id }}" style="position:absolute; right:16px; bottom:6px; font-size:11px; color:#ef4444; text-decoration:none; font-weight:bold;">Dismiss Banner</a>
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        {% for ann in personal_announcements %}
+        <div class="announcement-banner personal">
+            <div class="announcement-header" style="color:#38bdf8;">🔒 Direct User Transmission Secure Message <span>From: {{ ann.sender }} • {{ ann.time }}</span></div>
+            <div class="announcement-text">{{ ann.content }}</div>
+            {% if tier in ['admin', 'supervisor'] %}
+            <a href="/admin/clear-announcement/{{ user_email }}/{{ ann.id }}" style="position:absolute; right:16px; bottom:6px; font-size:11px; color:#ef4444; text-decoration:none; font-weight:bold;">Dismiss Banner</a>
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        <!-- MAIN LAYOUT STANDARD VIEWER -->
         <section>
             <div class="section-headline">
                 <span class="section-headline-tag">PRIMARY ARCHIVES</span>
@@ -229,12 +309,14 @@
             <div class="media-grid">
                 <div class="video-cinema-card">
                     <div class="video-player-wrapper">
-                        <iframe id="main-frame-screen" src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
+                        <!-- CLEAN COLD START: src is empty until item is requested from side directory -->
+                        <iframe id="main-frame-screen" src="" allowfullscreen></iframe>
                     </div>
                     <div class="video-card-body">
                         <span class="badge-tier badge-standard">Standard Stream Access</span>
                         <h3 id="main-frame-title">Select a video from the log menu to begin</h3>
                         
+                        <!-- FEEDBACK FEED -->
                         <div class="comment-container">
                             <div class="comment-box-title">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
@@ -242,11 +324,11 @@
                             </div>
                             
                             <div id="dynamic-comment-feed-hook">
-                                <p style="color:var(--text-muted); font-size:13px;">No comments posted on this track yet.</p>
+                                <p style="color:var(--text-muted); font-size:13px;">No video active. Select a stream to read comments.</p>
                             </div>
 
                             <form action="/add-comment" method="POST" class="comment-input-area">
-                                <input type="hidden" name="video_title" id="comment-hidden-video-title" value="Grandpa's First Video">
+                                <input type="hidden" name="video_id" id="comment-hidden-video-id" value="">
                                 <input type="text" name="comment_text" class="comment-input-field" placeholder="Leave a comment for the family..." required>
                                 <button type="submit" class="btn-comment-submit">Post</button>
                             </form>
@@ -258,7 +340,7 @@
                     <div class="side-feed-title">Available Video Log Entries</div>
                     {% for video in videos %}
                         {% if video.tier == 'standard' %}
-                        <div class="side-card" onclick="updateCinemaScreen('{{ video.url }}', '{{ video.title }}')">
+                        <div class="side-card" onclick="updateCinemaScreen('{{ video.url }}', '{{ video.id }}', '{{ video.title|escape("js") }}')">
                             <div class="side-card-thumb">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                             </div>
@@ -270,7 +352,8 @@
             </div>
         </section>
 
-        {% if tier == 'bonus' or tier == 'admin' %}
+        <!-- SECURE VAULT LAYER -->
+        {% if tier in ['bonus', 'supervisor', 'admin'] %}
         <section style="margin-top:40px;">
             <div class="section-headline">
                 <span class="section-headline-tag">PREMIUM ACCESS TRACK</span>
@@ -288,7 +371,7 @@
                         <div style="margin-top:20px; display:flex; flex-direction:column; gap:12px;">
                         {% for video in videos %}
                             {% if video.tier == 'bonus' %}
-                            <div class="side-card" onclick="document.getElementById('bonus-frame-screen').src='{{ video.url }}'; document.getElementById('bonus-frame-title').innerText='{{ video.title }}'">
+                            <div class="side-card" onclick="document.getElementById('bonus-frame-screen').src='{{ video.url }}'; document.getElementById('bonus-frame-title').innerText='{{ video.title|escape("js") }}'">
                                 <div class="side-card-thumb"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
                                 <div class="side-card-content"><h4>{{ video.title }}</h4></div>
                             </div>
@@ -305,19 +388,19 @@
     <script>
         const globalCommentsDb = {{ comments|tojson }};
 
-        function updateCinemaScreen(url, title) {
+        function updateCinemaScreen(url, id, title) {
             document.getElementById('main-frame-screen').src = url;
             document.getElementById('main-frame-title').innerText = title;
-            document.getElementById('comment-hidden-video-title').value = title;
-            renderCommentsForVideo(title);
+            document.getElementById('comment-hidden-video-id').value = id;
+            renderCommentsForVideo(id);
         }
 
-        function renderCommentsForVideo(title) {
+        function renderCommentsForVideo(id) {
             const hook = document.getElementById('dynamic-comment-feed-hook');
             hook.innerHTML = "";
             
-            if (globalCommentsDb[title] && globalCommentsDb[title].length > 0) {
-                globalCommentsDb[title].forEach(comment => {
+            if (globalCommentsDb[id] && globalCommentsDb[id].length > 0) {
+                globalCommentsDb[id].forEach(comment => {
                     hook.innerHTML += `
                         <div class="comment-entry-row">
                             <div class="comment-meta">${comment.author} <span>${comment.time}</span></div>
@@ -335,12 +418,7 @@
             desk.style.display = (desk.style.display === 'block') ? 'none' : 'block';
         }
 
-        // Auto-load comments for the default starting video if present
         window.onload = function() {
-            const currentTitle = document.getElementById('main-frame-title').innerText;
-            renderCommentsForVideo(currentTitle);
-            
-            // Keep admin panel layout visible if a post action triggers redirection parameter
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('open_admin') === 'true') {
                 toggleAdminDesk();
