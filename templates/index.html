@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B-Stream Central — Private Stream Archives</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Modern Design System & Custom Variables */
+        :root {
+            --bg-color: #060608;
+            --bg-gradient: radial-gradient(circle at 50% -20%, #1e1710 0%, #060608 60%);
+            --surface-color: rgba(16, 16, 20, 0.7);
+            --surface-hover: rgba(22, 22, 28, 0.85);
+            --border-color: rgba(255, 255, 255, 0.04);
+            --border-highlight: rgba(212, 175, 55, 0.2);
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --accent-gold: #dfb26c;
+            --accent-gold-bright: #f5cf8e;
+            --accent-gold-dim: #9a7d4e;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
+            --shadow-glow: 0 0 30px rgba(223, 178, 108, 0.08);
+            --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Base Resets */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-color);
+            background-image: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* --- STAGE 1: LOCKED VIEW (Flask Integrated Form) --- */
+        #logged-out-view {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        .ambient-glow {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(223, 178, 108, 0.05) 0%, rgba(0, 0, 0, 0) 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .lock-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 48px 40px;
+            max-width: 460px;
+            width: 100%;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: var(--shadow-lg), var(--shadow-glow);
+            z-index: 2;
+            animation: cardFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes cardFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .lock-card h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 26px;
+            text-align: center;
+            letter-spacing: 2px;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .lock-card .subtitle {
+            font-size: 12px;
+            text-align: center;
+            color: var(--accent-gold);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        /* Custom Input Styles for Flask Auth Form */
+        .auth-form-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+        .auth-label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .auth-control {
+            width: 100%;
+            background: rgba(10, 10, 14, 0.6);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: white;
+            padding: 14px;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            transition: var(--transition-smooth);
+        }
+        .auth-control:focus {
+            border-color: var(--accent-gold);
+            outline: none;
+            background: rgba(15, 15, 22, 0.8);
+        }
+
+        .error-banner {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .btn-premium {
+            background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-dim) 100%);
+            color: #0d0d11;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            border: none;
+            border-radius: 12px;
+            padding: 16px 36px;
+            cursor: pointer;
+            width: 100%;
+            transition: var(--transition-smooth);
+            box-shadow: 0 4px 15px rgba(223, 178, 108, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .btn-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(223, 178, 108, 0.35);
+            background: linear-gradient(135deg, var(--accent-gold-bright) 0%, var(--accent-gold) 100%);
+        }
+
+        .footer-tag {
+            margin-top: 32px;
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* --- STAGE 2: LOGGED IN DASHBOARD --- */
+        header {
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(10, 10, 14, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 20px 0;
+            margin-bottom: 48px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .brand-logo-text {
+            font-family: 'Cinzel', serif;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            background: linear-gradient(to right, var(--text-primary), var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-icon { color: var(--accent-gold); }
+        .header-user-actions { display: flex; align-items: center; gap: 20px; }
+
+        .user-profile-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 100px;
+        }
+
+        .welcome-greeting { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+
+        .btn-admin-link {
+            border: 1px solid var(--accent-gold-dim);
+            background: rgba(223, 178, 108, 0.05);
+            color: var(--accent-gold);
+            border-radius: 100px;
+            padding: 8px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition-smooth);
+        }
+        .btn-admin-link:hover {
+            background: var(--accent-gold);
+            color: #000;
+        }
+
+        .btn-outline-logout {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 100px;
+            padding: 8px 18px;
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-outline-logout:hover {
+            color: #ff5a5a;
+            border-color: rgba(255, 90, 90, 0.3);
+            background: rgba(255, 90, 90, 0.04);
+        }
+
+        /* Video Sections */
+        .section-headline { margin-bottom: 32px; }
+        .section-headline-tag { font-size: 12px; text-transform: uppercase; letter-spacing: 3px; color: var(--accent-gold); font-weight: 600; margin-bottom: 8px; display: block; }
+        .section-headline h2 { font-family: 'Cinzel', serif; font-size: 32px; font-weight: 600; color: var(--text-primary); }
+
+        .media-grid { display: grid; grid-template-columns: 2fr 1.2fr; gap: 32px; margin-bottom: 64px; }
+        @media (max-width: 968px) { .media-grid { grid-template-columns: 1fr; } }
+
+        .video-cinema-card { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-lg); }
+        .video-player-wrapper { position: relative; width: 100%; padding-top: 56.25%; background: #020203; }
+        .video-player-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        
+        .video-card-body { padding: 28px; }
+        .meta-tags-row { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; }
+        .badge-tier { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 4px 10px; border-radius: 6px; }
+        .badge-standard { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-secondary); }
+        .badge-bonus { background: rgba(223,178,108,0.1); border: 1px solid var(--accent-gold); color: var(--accent-gold); }
+
+        .video-card-body h3 { font-size: 22px; font-weight: 600; color: var(--text-primary); margin-bottom: 12px; }
+        .video-card-body p { font-size: 15px; color: var(--text-secondary); line-height: 1.6; font-weight: 300; }
+
+        /* Sidebar Side Feed */
+        .side-feed { display: flex; flex-direction: column; gap: 20px; }
+        .side-feed-title { font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent-gold); font-weight: 600; }
+        .side-card { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; display: flex; gap: 16px; cursor: pointer; transition: var(--transition-smooth); }
+        .side-card:hover { border-color: rgba(255,255,255,0.08); background: var(--surface-hover); transform: translateX(4px); }
+        .side-card-thumb { width: 80px; height: 50px; background: #020203; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--accent-gold); }
+        .side-card-content h4 { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+
+        .cinematic-divider { display: flex; align-items: center; justify-content: center; margin: 60px 0; opacity: 0.5; }
+        .cinematic-divider .line { height: 1px; background: linear-gradient(to right, transparent, var(--border-highlight), transparent); flex-grow: 1; }
+        .cinematic-divider .diamond { width: 8px; height: 8px; background: var(--accent-gold); transform: rotate(45deg); margin: 0 16px; }
+
+        .bonus-lockout-alert { background: radial-gradient(circle at 10% 10%, rgba(20, 15, 10, 0.8) 0%, rgba(10, 10, 12, 0.95) 100%); border: 1px solid rgba(223, 178, 108, 0.08); border-radius: 20px; padding: 48px; text-align: center; box-shadow: var(--shadow-lg); border-left: 3px solid var(--accent-gold-dim); }
+    </style>
+</head>
+<body>
+
+    {% if not logged_in %}
+    <div id="logged-out-view">
+        <div class="ambient-glow"></div>
+        <div class="lock-card">
+            <div style="text-align: center; margin-bottom: 24px; color: var(--accent-gold);">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+            </div>
+            <h1>B-Stream Central</h1>
+            <div class="subtitle">Private Family Archives</div>
+
+            {% if request.args.get('error') %}
+            <div class="error-banner">Unauthorized clearance. Check credentials.</div>
+            {% endif %}
+
+            <form action="/login" method="POST">
+                <div class="auth-form-group">
+                    <label class="auth-label">Authorized Email Link</label>
+                    <input type="email" name="email" class="auth-control" placeholder="username@email.com" required autocomplete="email">
+                </div>
+                <div class="auth-form-group">
+                    <label class="auth-label">Family Clear-Text Passcode</label>
+                    <input type="password" name="password" class="auth-control" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-premium">
+                    <span>Enter Vault Space</span>
+                </button>
+            </form>
+            
+            <div class="footer-tag">Family Security Infrastructure Active</div>
+        </div>
+    </div>
+    {% endif %}
+
+
+    {% if logged_in %}
+    <div id="logged-in-view">
+        <header>
+            <div class="container header-content">
+                <a href="#" class="brand-logo">
+                    <svg class="brand-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                    </svg>
+                    <span class="brand-logo-text">B-Stream Central</span>
+                </a>
+                
+                <div class="header-user-actions">
+                    <div class="user-profile-badge">
+                        <span class="welcome-greeting">Welcome back, {{ name }}!</span>
+                    </div>
+                    
+                    {% if tier == 'admin' %}
+                    <a href="/admin" class="btn-admin-link">Admin Console</a>
+                    {% endif %}
+
+                    <a href="/logout" class="btn-outline-logout">Sign Out</a>
+                </div>
+            </div>
+        </header>
+
+        <div class="container">
+            <section id="standard-tier-section">
+                <div class="section-headline">
+                    <span class="section-headline-tag">PRIMARY ARCHIVES</span>
+                    <h2>Grandpa's Weekly Updates</h2>
+                </div>
+
+                <div class="media-grid">
+                    <div class="video-cinema-card">
+                        <div class="video-player-wrapper">
+                            <iframe id="main-frame-screen" src="https://www.youtube.com/embed/cgg9lcmtOeE" allowfullscreen></iframe>
+                        </div>
+                        <div class="video-card-body">
+                            <div class="meta-tags-row">
+                                <span class="badge-tier badge-standard">Standard Stream Access</span>
+                            </div>
+                            <h3 id="main-frame-title">Select a log from the feed list to stream</h3>
+                            <p id="main-frame-desc">Use the interactive grid navigation module on the side to update the frame engine.</p>
+                        </div>
+                    </div>
+
+                    <div class="side-feed">
+                        <div class="side-feed-title">Available Video Log Entries</div>
+                        
+                        {% for video in videos %}
+                            {% if video.tier == 'standard' %}
+                            <div class="side-card" onclick="updateCinemaScreen('{{ video.url }}', '{{ video.title|escapejs }}', 'B-Stream Database Managed Entry.')">
+                                <div class="side-card-thumb">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                                </div>
+                                <div class="side-card-content">
+                                    <h4>{{ video.title }}</h4>
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+
+            <div class="cinematic-divider">
+                <span class="line"></span>
+                <span class="diamond"></span>
+                <span class="line"></span>
+            </div>
+
+            <section id="bonus-tier-section">
+                {% if tier == 'bonus' or tier == 'admin' %}
+                <div class="section-headline">
+                    <span class="section-headline-tag">PREMIUM SECURE TRACK ACTIVE</span>
+                    <h2>🔒 Secret Bonus Videos</h2>
+                </div>
+
+                <div class="media-grid">
+                    <div class="video-cinema-card" style="grid-column: 1 / -1; max-width: 900px; margin: 0 auto; width:100%;">
+                        <div class="video-player-wrapper">
+                            <iframe id="bonus-frame-screen" src="https://www.youtube.com/embed/g-z4hs4VJiw" allowfullscreen></iframe>
+                        </div>
+                        <div class="video-card-body">
+                            <div class="meta-tags-row">
+                                <span class="badge-tier badge-bonus">VIP Bonus Vault Unlock</span>
+                            </div>
+                            <h3>Premium Vault Logs</h3>
+                            
+                            <div style="margin-top:20px; display:flex; flex-direction:column; gap:12px;">
+                            {% for video in videos %}
+                                {% if video.tier == 'bonus' %}
+                                <div class="side-card" onclick="document.getElementById('bonus-frame-screen').src='{{ video.url }}'">
+                                    <div class="side-card-thumb" style="color:var(--accent-gold);">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                    </div>
+                                    <div class="side-card-content">
+                                        <h4>{{ video.title }}</h4>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                
+                {% else %}
+                <div class="bonus-lockout-alert">
+                    <div style="color: var(--accent-gold); margin-bottom: 16px;">
+                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                    </div>
+                    <h3>Secret Bonus Archives are Locked</h3>
+                    <p>Your family user profile does not currently have the higher tier clearance required to view premium historical files. Please contact the site administrator to have your profile updated.</p>
+                </div>
+                {% endif %}
+            </section>
+        </div>
+    </div>
+
+    <script>
+        // Inline UI Player Frame Swap Engine
+        function updateCinemaScreen(url, title, desc) {
+            document.getElementById('main-frame-screen').src = url;
+            document.getElementById('main-frame-title').innerText = title;
+            document.getElementById('main-frame-desc').innerText = desc;
+        }
+    </script>
+    {% endif %}
+
+</body>
+</html>
