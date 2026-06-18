@@ -9,489 +9,344 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        /* Modern Design System & Custom Variables */
         :root {
             --bg-color: #060608;
             --bg-gradient: radial-gradient(circle at 50% -20%, #1e1710 0%, #060608 60%);
             --surface-color: rgba(16, 16, 20, 0.7);
             --surface-hover: rgba(22, 22, 28, 0.85);
             --border-color: rgba(255, 255, 255, 0.04);
-            --border-highlight: rgba(212, 175, 55, 0.2);
             --text-primary: #f3f4f6;
             --text-secondary: #9ca3af;
             --text-muted: #6b7280;
             --accent-gold: #dfb26c;
             --accent-gold-bright: #f5cf8e;
             --accent-gold-dim: #9a7d4e;
-            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
-            --shadow-glow: 0 0 30px rgba(223, 178, 108, 0.08);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
             --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* Base Resets */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { width: 100%; background-color: var(--bg-color); background-image: var(--bg-gradient); background-attachment: fixed; color: var(--text-primary); font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
 
-        html, body {
-            width: 100%;
-            height: 100%;
-            background-color: var(--bg-color);
-            background-image: var(--bg-gradient);
-            background-attachment: fixed;
-            color: var(--text-primary);
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            overflow-x: hidden;
-        }
+        /* --- LOGGED OUT GATE VIEW --- */
+        #logged-out-view { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .lock-card { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 20px; padding: 48px 40px; max-width: 460px; width: 100%; backdrop-filter: blur(16px); box-shadow: var(--shadow-lg); text-align: center; }
+        .lock-card h1 { font-family: 'Cinzel', serif; font-size: 26px; letter-spacing: 2px; margin-bottom: 6px; }
+        .lock-card .subtitle { font-size: 12px; color: var(--accent-gold); letter-spacing: 3px; font-weight: 600; margin-bottom: 24px; text-transform: uppercase; }
+        .auth-form-group { margin-bottom: 16px; text-align: left; }
+        .auth-label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; }
+        .auth-control { width: 100%; background: rgba(10, 10, 14, 0.6); border: 1px solid rgba(255,255,255,0.08); color: white; padding: 14px; border-radius: 10px; font-family: inherit; }
+        .auth-control:focus { border-color: var(--accent-gold); outline: none; }
+        .btn-premium { background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-dim) 100%); color: #0d0d11; font-size: 15px; font-weight: 700; border: none; border-radius: 12px; padding: 16px; width: 100%; cursor: pointer; margin-top: 15px; transition: var(--transition-smooth); }
+        .btn-premium:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(223, 178, 108, 0.35); }
+        .error-banner { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171; padding: 10px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 24px;
-        }
+        /* --- LOGGED IN HEADER --- */
+        header { border-bottom: 1px solid var(--border-color); background: rgba(10, 10, 14, 0.6); backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 100; padding: 20px 0; margin-bottom: 40px; }
+        .header-content { display: flex; justify-content: space-between; align-items: center; }
+        .brand-logo-text { font-family: 'Cinzel', serif; font-size: 20px; font-weight: 700; letter-spacing: 2px; color: var(--text-primary); text-decoration: none; }
+        .header-user-actions { display: flex; align-items: center; gap: 15px; }
+        .btn-admin-toggle { border: 1px solid var(--accent-gold-dim); background: rgba(223, 178, 108, 0.05); color: var(--accent-gold); border-radius: 100px; padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; }
+        .btn-logout { background: transparent; border: 1px solid var(--border-color); border-radius: 100px; padding: 8px 18px; color: var(--text-secondary); font-size: 13px; text-decoration: none; }
 
-        /* --- STAGE 1: LOCKED VIEW (Flask Integrated Form) --- */
-        #logged-out-view {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 40px 20px;
-            position: relative;
-        }
-
-        .ambient-glow {
-            position: absolute;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(223, 178, 108, 0.05) 0%, rgba(0, 0, 0, 0) 70%);
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        .lock-card {
-            background: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 48px 40px;
-            max-width: 460px;
-            width: 100%;
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            box-shadow: var(--shadow-lg), var(--shadow-glow);
-            z-index: 2;
-            animation: cardFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        @keyframes cardFadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .lock-card h1 {
-            font-family: 'Cinzel', serif;
-            font-size: 26px;
-            text-align: center;
-            letter-spacing: 2px;
-            color: var(--text-primary);
-            margin-bottom: 6px;
-            text-transform: uppercase;
-        }
-
-        .lock-card .subtitle {
-            font-size: 12px;
-            text-align: center;
-            color: var(--accent-gold);
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            font-weight: 600;
-            margin-bottom: 24px;
-        }
-
-        /* Custom Input Styles for Flask Auth Form */
-        .auth-form-group {
-            margin-bottom: 16px;
-            text-align: left;
-        }
-        .auth-label {
-            display: block;
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .auth-control {
-            width: 100%;
-            background: rgba(10, 10, 14, 0.6);
-            border: 1px solid rgba(255,255,255,0.08);
-            color: white;
-            padding: 14px;
-            border-radius: 10px;
-            font-family: inherit;
-            font-size: 14px;
-            transition: var(--transition-smooth);
-        }
-        .auth-control:focus {
-            border-color: var(--accent-gold);
-            outline: none;
-            background: rgba(15, 15, 22, 0.8);
-        }
-
-        .error-banner {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            color: #f87171;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 13px;
-            margin-bottom: 16px;
-            text-align: center;
-        }
-
-        .btn-premium {
-            background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-dim) 100%);
-            color: #0d0d11;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 15px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            border: none;
-            border-radius: 12px;
-            padding: 16px 36px;
-            cursor: pointer;
-            width: 100%;
-            transition: var(--transition-smooth);
-            box-shadow: 0 4px 15px rgba(223, 178, 108, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 24px;
-        }
-
-        .btn-premium:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(223, 178, 108, 0.35);
-            background: linear-gradient(135deg, var(--accent-gold-bright) 0%, var(--accent-gold) 100%);
-        }
-
-        .footer-tag {
-            margin-top: 32px;
-            text-align: center;
-            font-size: 11px;
-            color: var(--text-muted);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        /* --- STAGE 2: LOGGED IN DASHBOARD --- */
-        header {
-            border-bottom: 1px solid var(--border-color);
-            background: rgba(10, 10, 14, 0.6);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            padding: 20px 0;
-            margin-bottom: 48px;
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .brand-logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-            color: var(--text-primary);
-        }
-
-        .brand-logo-text {
-            font-family: 'Cinzel', serif;
-            font-size: 20px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            background: linear-gradient(to right, var(--text-primary), var(--accent-gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .brand-icon { color: var(--accent-gold); }
-        .header-user-actions { display: flex; align-items: center; gap: 20px; }
-
-        .user-profile-badge {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-color);
-            border-radius: 100px;
-        }
-
-        .welcome-greeting { font-size: 14px; font-weight: 500; color: var(--text-primary); }
-
-        .btn-admin-link {
-            border: 1px solid var(--accent-gold-dim);
-            background: rgba(223, 178, 108, 0.05);
-            color: var(--accent-gold);
-            border-radius: 100px;
-            padding: 8px 18px;
-            font-size: 13px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: var(--transition-smooth);
-        }
-        .btn-admin-link:hover {
-            background: var(--accent-gold);
-            color: #000;
-        }
-
-        .btn-outline-logout {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            border-radius: 100px;
-            padding: 8px 18px;
-            color: var(--text-secondary);
-            font-family: inherit;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition-smooth);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-outline-logout:hover {
-            color: #ff5a5a;
-            border-color: rgba(255, 90, 90, 0.3);
-            background: rgba(255, 90, 90, 0.04);
-        }
-
-        /* Video Sections */
-        .section-headline { margin-bottom: 32px; }
-        .section-headline-tag { font-size: 12px; text-transform: uppercase; letter-spacing: 3px; color: var(--accent-gold); font-weight: 600; margin-bottom: 8px; display: block; }
-        .section-headline h2 { font-family: 'Cinzel', serif; font-size: 32px; font-weight: 600; color: var(--text-primary); }
-
-        .media-grid { display: grid; grid-template-columns: 2fr 1.2fr; gap: 32px; margin-bottom: 64px; }
+        /* VIDEO PLATFORM PANELS */
+        .section-headline { margin-bottom: 24px; }
+        .section-headline-tag { font-size: 12px; letter-spacing: 3px; color: var(--accent-gold); font-weight: 600; text-transform: uppercase; }
+        .section-headline h2 { font-family: 'Cinzel', serif; font-size: 28px; }
+        .media-grid { display: grid; grid-template-columns: 2fr 1.2fr; gap: 32px; margin-bottom: 48px; }
         @media (max-width: 968px) { .media-grid { grid-template-columns: 1fr; } }
-
         .video-cinema-card { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-lg); }
         .video-player-wrapper { position: relative; width: 100%; padding-top: 56.25%; background: #020203; }
         .video-player-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-        
-        .video-card-body { padding: 28px; }
-        .meta-tags-row { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; }
-        .badge-tier { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 4px 10px; border-radius: 6px; }
-        .badge-standard { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-secondary); }
-        .badge-bonus { background: rgba(223,178,108,0.1); border: 1px solid var(--accent-gold); color: var(--accent-gold); }
+        .video-card-body { padding: 24px; }
+        .badge-tier { font-size: 11px; font-weight: 700; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; display: inline-block; margin-bottom: 12px; }
+        .badge-standard { background: rgba(255,255,255,0.05); color: var(--text-secondary); }
+        .badge-bonus { background: rgba(223,178,108,0.1); color: var(--accent-gold); border: 1px solid var(--accent-gold); }
 
-        .video-card-body h3 { font-size: 22px; font-weight: 600; color: var(--text-primary); margin-bottom: 12px; }
-        .video-card-body p { font-size: 15px; color: var(--text-secondary); line-height: 1.6; font-weight: 300; }
+        /* FEED SECTIONS */
+        .side-feed { display: flex; flex-direction: column; gap: 16px; }
+        .side-feed-title { font-size: 13px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent-gold); font-weight: 600; }
+        .side-card { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 14px; padding: 16px; display: flex; gap: 14px; cursor: pointer; transition: var(--transition-smooth); }
+        .side-card:hover { background: var(--surface-hover); transform: translateX(4px); }
+        .side-card-thumb { width: 60px; height: 40px; background: #020203; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--accent-gold); }
 
-        /* Sidebar Side Feed */
-        .side-feed { display: flex; flex-direction: column; gap: 20px; }
-        .side-feed-title { font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent-gold); font-weight: 600; }
-        .side-card { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; display: flex; gap: 16px; cursor: pointer; transition: var(--transition-smooth); }
-        .side-card:hover { border-color: rgba(255,255,255,0.08); background: var(--surface-hover); transform: translateX(4px); }
-        .side-card-thumb { width: 80px; height: 50px; background: #020203; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--accent-gold); }
-        .side-card-content h4 { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+        /* --- NEW: FAMILY FEEDBACK ENGINE (COMMENTS) --- */
+        .comment-container { margin-top: 24px; border-top: 1px solid var(--border-color); padding-top: 24px; }
+        .comment-box-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+        .comment-entry-row { background: rgba(255,255,255,0.02); border-radius: 12px; padding: 14px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.02); }
+        .comment-meta { font-size: 12px; color: var(--accent-gold); margin-bottom: 4px; font-weight: 500; }
+        .comment-meta span { color: var(--text-muted); font-weight: 400; margin-left: 6px; }
+        .comment-body { font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
+        .comment-input-area { margin-top: 16px; display: flex; gap: 12px; }
+        .comment-input-field { flex-grow: 1; background: #0a0a0f; border: 1px solid #222; border-radius: 8px; color: white; padding: 12px; font-family: inherit; font-size: 14px; }
+        .btn-comment-submit { background: #dfb26c; color: black; border: none; border-radius: 8px; padding: 0 20px; font-weight: bold; cursor: pointer; }
 
-        .cinematic-divider { display: flex; align-items: center; justify-content: center; margin: 60px 0; opacity: 0.5; }
-        .cinematic-divider .line { height: 1px; background: linear-gradient(to right, transparent, var(--border-highlight), transparent); flex-grow: 1; }
-        .cinematic-divider .diamond { width: 8px; height: 8px; background: var(--accent-gold); transform: rotate(45deg); margin: 0 16px; }
-
-        .bonus-lockout-alert { background: radial-gradient(circle at 10% 10%, rgba(20, 15, 10, 0.8) 0%, rgba(10, 10, 12, 0.95) 100%); border: 1px solid rgba(223, 178, 108, 0.08); border-radius: 20px; padding: 48px; text-align: center; box-shadow: var(--shadow-lg); border-left: 3px solid var(--accent-gold-dim); }
+        /* --- HIDDEN ADMIN BOARD CARD --- */
+        #hidden-admin-desk { background: #0e0f17; border: 1px solid #1f2231; border-radius: 20px; padding: 32px; margin-top: 40px; display: none; box-shadow: inset 0 4px 30px rgba(0,0,0,0.8); }
+        .admin-grid { display: grid; grid-template-columns: 1fr; gap: 32px; }
+        @media(min-width: 900px) { .admin-grid { grid-template-columns: 1.2fr 1fr; } }
+        .admin-card { background: #141622; border-radius: 12px; padding: 20px; border: 1px solid #22263a; }
+        .admin-card h3 { color: var(--accent-gold); font-size: 16px; margin-bottom: 15px; border-bottom: 1px solid #22263a; padding-bottom: 8px; }
+        .form-ctrl { width: 100%; background: #1a1d2c; border: 1px solid #2d3249; color: white; padding: 10px; border-radius: 6px; margin-bottom: 12px; font-family: inherit; font-size: 13px; }
+        .btn-save { background: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; }
+        .btn-danger-link { color: #ef4444; text-decoration: none; font-size: 12px; margin-left: 8px; }
+        .admin-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }
+        .admin-table th, .admin-table td { text-align: left; padding: 8px; border-bottom: 1px solid #22263a; }
+        .admin-table th { color: var(--text-muted); }
     </style>
 </head>
 <body>
 
     {% if not logged_in %}
     <div id="logged-out-view">
-        <div class="ambient-glow"></div>
         <div class="lock-card">
-            <div style="text-align: center; margin-bottom: 24px; color: var(--accent-gold);">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                </svg>
-            </div>
             <h1>B-Stream Central</h1>
             <div class="subtitle">Private Family Archives</div>
-
             {% if request.args.get('error') %}
             <div class="error-banner">Unauthorized clearance. Check credentials.</div>
             {% endif %}
-
             <form action="/login" method="POST">
                 <div class="auth-form-group">
                     <label class="auth-label">Authorized Email Link</label>
-                    <input type="email" name="email" class="auth-control" placeholder="username@email.com" required autocomplete="email">
+                    <input type="email" name="email" class="auth-control" placeholder="username@email.com" required>
                 </div>
                 <div class="auth-form-group">
-                    <label class="auth-label">Family Clear-Text Passcode</label>
+                    <label class="auth-label">Family Passcode</label>
                     <input type="password" name="password" class="auth-control" placeholder="••••••••" required>
                 </div>
-                <button type="submit" class="btn-premium">
-                    <span>Enter Vault Space</span>
-                </button>
+                <button type="submit" class="btn-premium">Enter Vault Space</button>
             </form>
-            
-            <div class="footer-tag">Family Security Infrastructure Active</div>
         </div>
     </div>
     {% endif %}
 
-
     {% if logged_in %}
-    <div id="logged-in-view">
-        <header>
-            <div class="container header-content">
-                <a href="#" class="brand-logo">
-                    <svg class="brand-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polygon points="23 7 16 12 23 17 23 7"></polygon>
-                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
-                    </svg>
-                    <span class="brand-logo-text">B-Stream Central</span>
-                </a>
-                
-                <div class="header-user-actions">
-                    <div class="user-profile-badge">
-                        <span class="welcome-greeting">Welcome back, {{ name }}!</span>
-                    </div>
-                    
-                    {% if tier == 'admin' %}
-                    <a href="/admin" class="btn-admin-link">Admin Console</a>
-                    {% endif %}
+    <header>
+        <div class="container header-content">
+            <a href="/" class="brand-logo-text">B-Stream Central</a>
+            <div class="header-user-actions">
+                <span>Hello, {{ name }}!</span>
+                {% if tier == 'admin' %}
+                <button class="btn-admin-toggle" onclick="toggleAdminDesk()">Control Panel Desk</button>
+                {% endif %}
+                <a href="/logout" class="btn-logout">Sign Out</a>
+            </div>
+        </div>
+    </header>
 
-                    <a href="/logout" class="btn-outline-logout">Sign Out</a>
+    <div class="container">
+        
+        {% if tier == 'admin' %}
+        <div id="hidden-admin-desk">
+            <h2 style="color:#dfb26c; font-family:'Cinzel', serif; margin-bottom:20px; font-size:22px;">System Infrastructure Control Desk</h2>
+            <div class="admin-grid">
+                
+                <div class="admin-card">
+                    <h3>Registered Accounts Directory</h3>
+                    <div style="overflow-x:auto;">
+                        <table class="admin-table">
+                            <thead>
+                                <tr><th>Name</th><th>Account User/Email</th><th>Passcode</th><th>Access</th><th>Actions</th></tr>
+                            </thead>
+                            <tbody>
+                                {% for email, info in users_list.items() %}
+                                <tr>
+                                    <form action="/admin/update-user" method="POST">
+                                        <input type="hidden" name="old_email" value="{{ email }}">
+                                        <td><input type="text" name="name" value="{{ info.name }}" style="background:transparent; border:none; color:white; width:70px;"></td>
+                                        <td><input type="text" name="new_email" value="{{ email }}" style="background:transparent; border:none; color:white; width:90px;"></td>
+                                        <td><input type="text" name="password" value="{{ info.password }}" style="background:transparent; border:none; color:white; width:80px; font-family:monospace;"></td>
+                                        <td>
+                                            <select name="tier" style="background:#1a1d2c; color:white; border:none;">
+                                                <option value="standard" {% if info.tier == 'standard' %}selected{% endif %}>Standard</option>
+                                                <option value="bonus" {% if info.tier == 'bonus' %}selected{% endif %}>Bonus</option>
+                                                <option value="admin" {% if info.tier == 'admin' %}selected{% endif %}>Admin</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <button type="submit" class="btn-save">Save</button>
+                                            {% if info.tier != 'admin' %}
+                                            <a href="/admin/delete-user/{{ email }}" class="btn-danger-link" onclick="return confirm('Delete user?')">X</a>
+                                            {% endif %}
+                                        </td>
+                                    </form>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <h4 style="color:#dfb26c; margin-top:20px; font-size:14px; margin-bottom:10px;">Provision New Profile</h4>
+                    <form action="/admin/add-user" method="POST">
+                        <input type="text" name="name" placeholder="Full Name" class="form-ctrl" required>
+                        <input type="email" name="email" placeholder="Email Username" class="form-ctrl" required>
+                        <input type="text" name="password" placeholder="Plain Text Password" class="form-ctrl" required>
+                        <select name="tier" class="form-ctrl">
+                            <option value="standard">Standard Tier</option>
+                            <option value="bonus">Bonus Tier</option>
+                        </select>
+                        <button type="submit" class="btn-premium" style="padding:8px; font-size:13px; margin-top:0;">Authorize Profile</button>
+                    </form>
+                </div>
+
+                <div class="admin-card">
+                    <h3>Publish New Media Stream</h3>
+                    <form action="/admin/add-video" method="POST">
+                        <input type="text" name="title" placeholder="Video Title Entry" class="form-ctrl" required>
+                        <input type="url" name="url" placeholder="Paste YouTube Link" class="form-ctrl" required>
+                        <select name="tier" class="form-ctrl">
+                            <option value="standard">Main Standard Grid</option>
+                            <option value="bonus">Hidden Bonus Vault</option>
+                        </select>
+                        <button type="submit" class="btn-premium" style="padding:8px; font-size:13px; margin-top:0; background:#38bdf8;">Deploy Stream Log</button>
+                    </form>
+
+                    <h3 style="margin-top:25px;">Live Archive Removal Desk</h3>
+                    <div style="max-height:180px; overflow-y:auto;">
+                        <table class="admin-table">
+                            <thead><tr><th>Active Video Title</th><th>Tier</th><th>Action</th></tr></thead>
+                            <tbody>
+                                {% for video in videos %}
+                                <tr>
+                                    <td>{{ video.title }}</td>
+                                    <td><span style="text-transform:uppercase; font-size:11px;">{{ video.tier }}</span></td>
+                                    <td><a href="/admin/delete-video/{{ video.id }}" style="color:#ef4444; font-weight:bold; text-decoration:none;" onclick="return confirm('Remove this video log permanently?')">Remove Log</a></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </header>
+        </div>
+        {% endif %}
 
-        <div class="container">
-            <section id="standard-tier-section">
-                <div class="section-headline">
-                    <span class="section-headline-tag">PRIMARY ARCHIVES</span>
-                    <h2>Grandpa's Weekly Updates</h2>
-                </div>
-
-                <div class="media-grid">
-                    <div class="video-cinema-card">
-                        <div class="video-player-wrapper">
-                            <iframe id="main-frame-screen" src="https://www.youtube.com/embed/cgg9lcmtOeE" allowfullscreen></iframe>
-                        </div>
-                        <div class="video-card-body">
-                            <div class="meta-tags-row">
-                                <span class="badge-tier badge-standard">Standard Stream Access</span>
+        <section>
+            <div class="section-headline">
+                <span class="section-headline-tag">PRIMARY ARCHIVES</span>
+                <h2>Grandpa's Weekly Updates</h2>
+            </div>
+            <div class="media-grid">
+                <div class="video-cinema-card">
+                    <div class="video-player-wrapper">
+                        <iframe id="main-frame-screen" src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-card-body">
+                        <span class="badge-tier badge-standard">Standard Stream Access</span>
+                        <h3 id="main-frame-title">Select a video from the log menu to begin</h3>
+                        
+                        <div class="comment-container">
+                            <div class="comment-box-title">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                <span>Family Feedback & Comments</span>
                             </div>
-                            <h3 id="main-frame-title">Select a log from the feed list to stream</h3>
-                            <p id="main-frame-desc">Use the interactive grid navigation module on the side to update the frame engine.</p>
+                            
+                            <div id="dynamic-comment-feed-hook">
+                                <p style="color:var(--text-muted); font-size:13px;">No comments posted on this track yet.</p>
+                            </div>
+
+                            <form action="/add-comment" method="POST" class="comment-input-area">
+                                <input type="hidden" name="video_title" id="comment-hidden-video-title" value="Grandpa's First Video">
+                                <input type="text" name="comment_text" class="comment-input-field" placeholder="Leave a comment for the family..." required>
+                                <button type="submit" class="btn-comment-submit">Post</button>
+                            </form>
                         </div>
                     </div>
+                </div>
 
-                    <div class="side-feed">
-                        <div class="side-feed-title">Available Video Log Entries</div>
+                <div class="side-feed">
+                    <div class="side-feed-title">Available Video Log Entries</div>
+                    {% for video in videos %}
+                        {% if video.tier == 'standard' %}
+                        <div class="side-card" onclick="updateCinemaScreen('{{ video.url }}', '{{ video.title }}')">
+                            <div class="side-card-thumb">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            </div>
+                            <div class="side-card-content"><h4>{{ video.title }}</h4></div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        {% if tier == 'bonus' or tier == 'admin' %}
+        <section style="margin-top:40px;">
+            <div class="section-headline">
+                <span class="section-headline-tag">PREMIUM ACCESS TRACK</span>
+                <h2>🔒 Secret Bonus Videos</h2>
+            </div>
+            <div class="media-grid">
+                <div class="video-cinema-card" style="grid-column: 1 / -1; max-width: 900px; margin: 0 auto; width:100%;">
+                    <div class="video-player-wrapper">
+                        <iframe id="bonus-frame-screen" src="" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-card-body">
+                        <span class="badge-tier badge-bonus">VIP Bonus Vault</span>
+                        <h3 id="bonus-frame-title">Premium Track Select</h3>
                         
+                        <div style="margin-top:20px; display:flex; flex-direction:column; gap:12px;">
                         {% for video in videos %}
-                            {% if video.tier == 'standard' %}
-                            <div class="side-card" onclick="updateCinemaScreen('{{ video.url }}', '{{ video.title|escapejs }}', 'B-Stream Database Managed Entry.')">
-                                <div class="side-card-thumb">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                                </div>
-                                <div class="side-card-content">
-                                    <h4>{{ video.title }}</h4>
-                                </div>
+                            {% if video.tier == 'bonus' %}
+                            <div class="side-card" onclick="document.getElementById('bonus-frame-screen').src='{{ video.url }}'; document.getElementById('bonus-frame-title').innerText='{{ video.title }}'">
+                                <div class="side-card-thumb"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
+                                <div class="side-card-content"><h4>{{ video.title }}</h4></div>
                             </div>
                             {% endif %}
                         {% endfor %}
+                        </div>
                     </div>
                 </div>
-            </section>
-
-            <div class="cinematic-divider">
-                <span class="line"></span>
-                <span class="diamond"></span>
-                <span class="line"></span>
             </div>
-
-            <section id="bonus-tier-section">
-                {% if tier == 'bonus' or tier == 'admin' %}
-                <div class="section-headline">
-                    <span class="section-headline-tag">PREMIUM SECURE TRACK ACTIVE</span>
-                    <h2>🔒 Secret Bonus Videos</h2>
-                </div>
-
-                <div class="media-grid">
-                    <div class="video-cinema-card" style="grid-column: 1 / -1; max-width: 900px; margin: 0 auto; width:100%;">
-                        <div class="video-player-wrapper">
-                            <iframe id="bonus-frame-screen" src="https://www.youtube.com/embed/g-z4hs4VJiw" allowfullscreen></iframe>
-                        </div>
-                        <div class="video-card-body">
-                            <div class="meta-tags-row">
-                                <span class="badge-tier badge-bonus">VIP Bonus Vault Unlock</span>
-                            </div>
-                            <h3>Premium Vault Logs</h3>
-                            
-                            <div style="margin-top:20px; display:flex; flex-direction:column; gap:12px;">
-                            {% for video in videos %}
-                                {% if video.tier == 'bonus' %}
-                                <div class="side-card" onclick="document.getElementById('bonus-frame-screen').src='{{ video.url }}'">
-                                    <div class="side-card-thumb" style="color:var(--accent-gold);">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                                    </div>
-                                    <div class="side-card-content">
-                                        <h4>{{ video.title }}</h4>
-                                    </div>
-                                </div>
-                                {% endif %}
-                            {% endfor %}
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-                
-                {% else %}
-                <div class="bonus-lockout-alert">
-                    <div style="color: var(--accent-gold); margin-bottom: 16px;">
-                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                        </svg>
-                    </div>
-                    <h3>Secret Bonus Archives are Locked</h3>
-                    <p>Your family user profile does not currently have the higher tier clearance required to view premium historical files. Please contact the site administrator to have your profile updated.</p>
-                </div>
-                {% endif %}
-            </section>
-        </div>
+        </section>
+        {% endif %}
     </div>
 
     <script>
-        // Inline UI Player Frame Swap Engine
-        function updateCinemaScreen(url, title, desc) {
+        const globalCommentsDb = {{ comments|tojson }};
+
+        function updateCinemaScreen(url, title) {
             document.getElementById('main-frame-screen').src = url;
             document.getElementById('main-frame-title').innerText = title;
-            document.getElementById('main-frame-desc').innerText = desc;
+            document.getElementById('comment-hidden-video-title').value = title;
+            renderCommentsForVideo(title);
+        }
+
+        function renderCommentsForVideo(title) {
+            const hook = document.getElementById('dynamic-comment-feed-hook');
+            hook.innerHTML = "";
+            
+            if (globalCommentsDb[title] && globalCommentsDb[title].length > 0) {
+                globalCommentsDb[title].forEach(comment => {
+                    hook.innerHTML += `
+                        <div class="comment-entry-row">
+                            <div class="comment-meta">${comment.author} <span>${comment.time}</span></div>
+                            <div class="comment-body">${comment.text}</div>
+                        </div>
+                    `;
+                });
+            } else {
+                hook.innerHTML = `<p style="color:var(--text-muted); font-size:13px;">No comments posted on this track yet.</p>`;
+            }
+        }
+
+        function toggleAdminDesk() {
+            const desk = document.getElementById('hidden-admin-desk');
+            desk.style.display = (desk.style.display === 'block') ? 'none' : 'block';
+        }
+
+        // Auto-load comments for the default starting video if present
+        window.onload = function() {
+            const currentTitle = document.getElementById('main-frame-title').innerText;
+            renderCommentsForVideo(currentTitle);
+            
+            // Keep admin panel layout visible if a post action triggers redirection parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('open_admin') === 'true') {
+                toggleAdminDesk();
+            }
         }
     </script>
     {% endif %}
-
 </body>
 </html>
